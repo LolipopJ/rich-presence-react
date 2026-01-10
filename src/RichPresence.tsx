@@ -1,19 +1,21 @@
-import "./index.scss";
+import "./styles/index.scss";
 
 import classnames from "classnames";
-import { type ComponentProps, useEffect, useState } from "react";
+import React, { type ComponentProps, useEffect, useState } from "react";
 
 import { RichPresenceType } from "./enums";
 import i18n from "./i18n";
+import Play from "./svgs/play.svg?react";
+import Team from "./svgs/team.svg?react";
 import { formatDuration, getDiscordAssetUrl } from "./utils";
 
 export interface RichPresenceProps extends ComponentProps<"div"> {
-  activity: Activity;
+  activity: RichPresenceActivity;
   theme?: "light" | "dark";
   size?: "normal" | "large";
 }
 
-export interface Activity {
+export interface RichPresenceActivity {
   state?: string;
   details?: string;
   timestamps?: {
@@ -26,9 +28,21 @@ export interface Activity {
     large_text?: string;
     large_image?: string | number;
   };
+  party?: {
+    size?: [number, number];
+  };
   type?: RichPresenceType;
   name?: string;
   application_id: string | number;
+  igdb_details?: IGDBDetails;
+  buttons?: string[];
+}
+
+export interface IGDBDetails {
+  artworks?: string[];
+  storyline?: string;
+  summary?: string;
+  url?: string;
 }
 
 const RichPresence = (props: RichPresenceProps) => {
@@ -44,6 +58,7 @@ const RichPresence = (props: RichPresenceProps) => {
     details,
     timestamps,
     assets,
+    party,
     type = RichPresenceType.UNKNOWN,
     name,
     application_id,
@@ -61,6 +76,9 @@ const RichPresence = (props: RichPresenceProps) => {
   const displayDetails = type === RichPresenceType.LISTENING ? state : details;
   const displayState =
     type === RichPresenceType.LISTENING ? assets?.large_text || "" : state;
+  const displayPartySize = party?.size
+    ? `${party.size[0]} / ${party.size[1]}`
+    : undefined;
   //#endregion
 
   //#region Timestamps and duration
@@ -85,11 +103,11 @@ const RichPresence = (props: RichPresenceProps) => {
       : undefined;
 
   useEffect(() => {
-    if (period) {
+    if (timestampStart) {
       const updateNowIntervalId = setInterval(() => setNow(Date.now()), 1000);
       return () => clearInterval(updateNowIntervalId);
     }
-  }, [period]);
+  }, [timestampStart]);
   //#endregion
 
   //#region Resolve assets' urls
@@ -140,31 +158,50 @@ const RichPresence = (props: RichPresenceProps) => {
           ) : null}
         </div>
         <div className="rich-presence-content">
-          <div className="rich-presence-content__name">{displayName}</div>
-          <div className="rich-presence-content__details">{displayDetails}</div>
-          <div className="rich-presence-content__state">{displayState}</div>
-          {timestampStart ? (
-            timestampEnd && period ? (
-              <div className="rich-presence-content__duration-wrapper">
-                <div className="rich-presence-content__duration-elapsed-time">
-                  {elapsedTimeText}
-                </div>
-                <div className="rich-presence-content__duration-progress-wrapper">
-                  <div
-                    className="rich-presence-content__duration-progress"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-                <div className="rich-presence-content__duration-period">
-                  {periodText}
-                </div>
-              </div>
-            ) : (
-              <div className="rich-presence-content__elapsed-time">
+          <div>
+            <div className="rich-presence-content__name">{displayName}</div>
+            <div className="rich-presence-content__details">
+              {displayDetails}
+            </div>
+            <div className="rich-presence-content__state">{displayState}</div>
+          </div>
+          {period ? (
+            // With period, display progress bar only
+            <div className="rich-presence-content__duration-wrapper">
+              <div className="rich-presence-content__duration-elapsed-time">
                 {elapsedTimeText}
               </div>
-            )
-          ) : null}
+              <div className="rich-presence-content__duration-progress-wrapper">
+                <div
+                  className="rich-presence-content__duration-progress"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+              <div className="rich-presence-content__duration-period">
+                {periodText}
+              </div>
+            </div>
+          ) : (
+            // Without period, display status badges
+            <div className="rich-presence-content__status">
+              {timestampStart ? (
+                <div className="rich-presence-content__status-item">
+                  <Play className="rich-presence-content__status-item-icon" />
+                  <div className="rich-presence-content__status-item-text">
+                    {elapsedTimeText}
+                  </div>
+                </div>
+              ) : null}
+              {displayPartySize ? (
+                <div className="rich-presence-content__status-item rich-presence-content__status-item--secondary">
+                  <Team className="rich-presence-content__status-item-icon" />
+                  <div className="rich-presence-content__status-item-text">
+                    {displayPartySize}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          )}
         </div>
       </div>
     </div>

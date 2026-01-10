@@ -1,0 +1,7 @@
+@mixin ellipsis() {
+	overflow: hidden;
+	position: relative;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+

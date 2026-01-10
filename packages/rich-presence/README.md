@@ -1,1 +1,0 @@
-# Rich Presence Component

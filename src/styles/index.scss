@@ -1,0 +1,205 @@
+@use './mixins.scss' as mixins;
+
+.rich-presence-container {
+  --rich-presence-text-color: oklab(0.322446 0.0015464 -0.0105554);
+  --rich-presence-text-color-positive: oklab(0.502158 -0.114925 0.0586558);
+  --rich-presence-text-color-secondary: oklab(0.502296 0.00311004 -0.0154928);
+  --rich-presence-background: oklab(0.999994 0.0000455678 0.0000200868);
+  --rich-presence-background-secondary: oklab(0.839398 0.000524133 -0.00559175);
+
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 8px;
+  overflow: visible;
+  position: relative;
+  color: var(--rich-presence-text-color);
+  background: var(--rich-presence-background);
+
+  .rich-presence-header {
+    @include mixins.ellipsis();
+
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3333333333333333;
+  }
+
+  .rich-presence-image {
+    max-width: 60px;
+    min-height: 60px;
+    min-width: 60px;
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
+
+    &-wrapper {
+      align-items: center;
+      border-radius: 8px;
+      display: flex;
+      height: max-content;
+      overflow: visible;
+      position: relative;
+    }
+
+    &__overlay {
+      padding: 4px;
+      background: var(--rich-presence-background);
+      align-items: center;
+      border-radius: 2147483647px;
+      bottom: -8px;
+      display: flex;
+      flex-shrink: 0;
+      inset-inline-end: -8px;
+      justify-content: center;
+      position: absolute;
+
+      &-image {
+        max-width: 24px;
+        min-height: 24px;
+        border-radius: inherit;
+        object-fit: cover;
+      }
+    }
+  }
+
+  .rich-presence-content {
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+    width: 100%;
+
+    &-wrapper {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: row;
+      gap: 8px;
+    }
+
+    &__name {
+      @include mixins.ellipsis();
+
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.2857142857142858;
+    }
+
+    &__details {
+      @include mixins.ellipsis();
+
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.3333333333333333;
+    }
+
+    &__state {
+      @include mixins.ellipsis();
+
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.3333333333333333;
+    }
+
+    &__duration {
+      &-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      &-elapsed-time {
+        @include mixins.ellipsis();
+
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.3333333333333333;
+      }
+
+      &-progress {
+        background-color: var(--rich-presence-text-color);
+        border-radius: inherit;
+        height: inherit;
+        min-width: 4px;
+
+        &-wrapper {
+          background-color: var(--rich-presence-background-secondary);
+          border-radius: 2px;
+          flex: 1;
+          height: 2px;
+        }
+      }
+
+      &-period {
+        @include mixins.ellipsis();
+
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.3333333333333333;
+      }
+    }
+
+    &__status {
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
+      flex-wrap: wrap;
+
+      &-item {
+        align-items: center;
+        display: flex;
+        flex-shrink: 0;
+        gap: 4px;
+        max-width: 100%;
+        overflow: hidden;
+
+        &-icon {
+          flex-shrink: 0;
+        }
+
+        &-text {
+          @include mixins.ellipsis();
+
+          color: var(--rich-presence-text-color-positive);
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 1.3333333333333333;
+        }
+
+        &--secondary {
+          .rich-presence-content__status-item-text {
+            color: var(--rich-presence-text-color-secondary);
+          }
+        }
+      }
+    }
+  }
+
+  &--size-large {
+    border-radius: 12px;
+
+    .rich-presence-image {
+      max-width: 100px;
+      min-height: 100px;
+    }
+
+    .rich-presence-image__overlay-image {
+      max-width: 32px;
+      min-height: 32px;
+    }
+
+    .rich-presence-content-wrapper {
+      gap: 12px;
+    }
+  }
+
+  &--theme-dark {
+    --rich-presence-text-color: oklab(0.952693 0.000792831 -0.00253612);
+    --rich-presence-text-color-positive: oklab(0.666885 -0.110467 0.0576282);
+    --rich-presence-text-color-secondary: oklab(
+      0.745443 0.00131971 -0.00849813
+    );
+    --rich-presence-background: oklab(0.298136 0.00109468 -0.00903396);
+    --rich-presence-background-secondary: oklab(0.434021 0.00319432 -0.0160975);
+  }
+}
