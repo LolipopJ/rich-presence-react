@@ -1,6 +1,5 @@
 import "./styles/index.scss";
 
-import classnames from "classnames";
 import React, { type ComponentProps, useEffect, useState } from "react";
 
 import { RichPresenceType } from "./enums";
@@ -129,14 +128,7 @@ export const RichPresence = (props: RichPresenceProps) => {
 
   return (
     <div
-      className={classnames({
-        "rich-presence-container": true,
-        "rich-presence-container--theme-light": theme === "light",
-        "rich-presence-container--theme-dark": theme === "dark",
-        "rich-presence-container--size-normal": size === "normal",
-        "rich-presence-container--size-large": size === "large",
-        [className]: !!className,
-      })}
+      className={`rich-presence-container rich-presence-container--theme-${theme} rich-presence-container--size-${size} ${className}`}
       {...rest}
     >
       <div className="rich-presence-header">{displayHeaderText}</div>

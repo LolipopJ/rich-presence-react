@@ -27,9 +27,6 @@
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
   },
-  "dependencies": {
-    "classnames": "^2.5.1"
-  },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/node": "^24.10.7",
