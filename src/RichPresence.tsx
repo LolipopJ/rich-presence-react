@@ -45,7 +45,7 @@ export interface IGDBDetails {
   url?: string;
 }
 
-const RichPresence = (props: RichPresenceProps) => {
+export const RichPresence = (props: RichPresenceProps) => {
   const {
     activity,
     theme = "dark",

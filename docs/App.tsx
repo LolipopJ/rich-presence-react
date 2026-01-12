@@ -1,8 +1,9 @@
 import "./App.css";
+import "rich-presence-react/style.css";
 
 import React from "react";
+import RichPresence from "rich-presence-react";
 
-import RichPresence from "../src";
 import { TEST_RICH_PRESENCES } from "./constants";
 
 const App = () => {

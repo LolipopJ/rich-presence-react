@@ -1,4 +1,4 @@
-import type { RichPresenceProps } from "../../src";
+import type { RichPresenceProps } from "rich-presence-react";
 
 export const TEST_RICH_PRESENCES: RichPresenceProps[] = [
   {
@@ -76,6 +76,27 @@ export const TEST_RICH_PRESENCES: RichPresenceProps[] = [
   },
   {
     activity: {
+      state: "Workspace: rich-presence-react",
+      details: "Editing RichPresence.tsx",
+      timestamps: {
+        start: Date.now() - 160000,
+      },
+      assets: {
+        small_text: "Visual Studio Code",
+        small_image: "1359299466493956258",
+        large_text: "Editing a TSX file",
+        large_image: "1359299426262319284",
+      },
+      type: 0,
+      name: "Visual Studio Code",
+      application_id: "383226320970055681",
+      buttons: ["View Repository"],
+    },
+    theme: "light",
+    size: "normal",
+  },
+  {
+    activity: {
       state: "🎤 陈奕迅​",
       details: "▶️ 当这地球没有花​",
       timestamps: {
@@ -93,27 +114,6 @@ export const TEST_RICH_PRESENCES: RichPresenceProps[] = [
       name: "Tencent QQ Music",
       application_id: "1431607752945434655",
       buttons: ["🎧 Listen", "🔍 View App on GitHub"],
-    },
-    theme: "light",
-    size: "normal",
-  },
-  {
-    activity: {
-      state: "Workspace: rich-presence-react",
-      details: "Editing RichPresence.tsx",
-      timestamps: {
-        start: Date.now() - 160000,
-      },
-      assets: {
-        small_text: "Visual Studio Code",
-        small_image: "1359299466493956258",
-        large_text: "Editing a TSX file",
-        large_image: "1359299426262319284",
-      },
-      type: 0,
-      name: "Visual Studio Code",
-      application_id: "383226320970055681",
-      buttons: ["View Repository"],
     },
     theme: "light",
     size: "large",
