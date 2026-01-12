@@ -1,7 +1,7 @@
 {
   "name": "rich-presence-react",
   "private": false,
-  "version": "0.1.0",
+  "version": "1.0.0-beta.1",
   "type": "module",
   "author": "LolipopJ",
   "description": "React component to display Discord rich presence",
@@ -12,7 +12,9 @@
     "url": "git+https://github.com/LolipopJ/rich-presence-react.git"
   },
   "files": [
-    "dist"
+    "dist",
+    "package.json",
+    "README.md"
   ],
   "module": "./dist/rich-presence-react.js",
   "main": "./dist/rich-presence-react.umd.cjs",
