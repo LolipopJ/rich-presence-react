@@ -1,5 +1,7 @@
 # Rich Presence React
 
+使用 React 实现的 Discord 动态卡片。
+
 ## 使用
 
 ```bash
@@ -44,6 +46,8 @@ pnpm dev
 构建预览页：
 
 ```bash
+# 构建组件库
+pnpm build
 # 构建预览页
 pnpm build:docs
 # 本地预览构建后结果
