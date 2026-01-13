@@ -1,6 +1,8 @@
 # Rich Presence React
 
-使用 React 实现的 Discord 动态卡片。
+基于 React 实现的 Discord 动态卡片。
+
+为了实时获取您的 Discord 动态信息，可以考虑自行部署 [LolipopJ/discord-activity-sender](https://github.com/LolipopJ/discord-activity-sender) 服务。
 
 ## 使用
 

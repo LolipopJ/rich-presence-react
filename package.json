@@ -3,6 +3,14 @@
   "private": false,
   "version": "0.1.0",
   "type": "module",
+  "author": "LolipopJ",
+  "description": "React component to display Discord rich presence",
+  "license": "Unlicense",
+  "homepage": "https://lolipopj.github.io/rich-presence-react/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LolipopJ/rich-presence-react.git"
+  },
   "files": [
     "dist"
   ],
