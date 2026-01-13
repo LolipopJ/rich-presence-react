@@ -26,19 +26,20 @@
   }
 
   .rich-presence-image {
-    max-width: 60px;
-    min-height: 60px;
-    min-width: 60px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
     aspect-ratio: 1 / 1;
+    border-radius: 8px;
 
     &-wrapper {
+      position: relative;
+      background: var(--rich-presence-background-secondary);
+      display: flex;
       align-items: center;
       border-radius: 8px;
-      display: flex;
       height: max-content;
       overflow: visible;
-      position: relative;
     }
 
     &__overlay {
@@ -54,8 +55,8 @@
       position: absolute;
 
       &-image {
-        max-width: 24px;
-        min-height: 24px;
+        width: 24px;
+        height: 24px;
         border-radius: inherit;
         object-fit: cover;
       }
@@ -179,13 +180,18 @@
     border-radius: 12px;
 
     .rich-presence-image {
-      max-width: 100px;
-      min-height: 100px;
+      width: 100px;
+      height: 100px;
+      border-radius: 12px;
+    }
+
+    .rich-presence-image-wrapper {
+      border-radius: 12px;
     }
 
     .rich-presence-image__overlay-image {
-      max-width: 32px;
-      min-height: 32px;
+      width: 32px;
+      height: 32px;
     }
 
     .rich-presence-content-wrapper {
