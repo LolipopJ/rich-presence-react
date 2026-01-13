@@ -12,6 +12,8 @@ export interface RichPresenceProps extends ComponentProps<"div"> {
   activity: RichPresenceActivity;
   theme?: "light" | "dark";
   size?: "normal" | "large";
+  fallbackLargeImage?: string;
+  fallbackSmallImage?: string;
 }
 
 export interface RichPresenceActivity {
@@ -49,6 +51,8 @@ export const RichPresence = (props: RichPresenceProps) => {
     activity,
     theme = "dark",
     size = "normal",
+    fallbackLargeImage = `data:image/svg+xml;utf8,<svg width='100' height='100' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' fill='oklab(0.839398 0.000524133 -0.00559175)' /></svg>`,
+    fallbackSmallImage = `data:image/svg+xml;utf8,<svg width='32' height='32' xmlns='http://www.w3.org/2000/svg'><circle cx='16' cy='16' r='16' fill='transparent' /></svg>`,
     className = "",
     ...rest
   } = props;
@@ -138,6 +142,11 @@ export const RichPresence = (props: RichPresenceProps) => {
             className="rich-presence-image"
             src={processedAssets?.large_image}
             title={processedAssets?.large_text}
+            onError={(e) => {
+              const img = e.currentTarget;
+              img.onerror = null;
+              img.src = fallbackLargeImage;
+            }}
           />
           {processedAssets?.small_image ? (
             <div className="rich-presence-image__overlay">
@@ -145,6 +154,11 @@ export const RichPresence = (props: RichPresenceProps) => {
                 className="rich-presence-image__overlay-image"
                 src={processedAssets.small_image}
                 title={processedAssets.small_text}
+                onError={(e) => {
+                  const img = e.currentTarget;
+                  img.onerror = null;
+                  img.src = fallbackSmallImage;
+                }}
               />
             </div>
           ) : null}
