@@ -123,6 +123,10 @@ export const RichPresence = (props: RichPresenceProps) => {
     : undefined;
   //#endregion
 
+  //#region Render conditions
+  const displayStatusBadges = timestampStart || displayPartySize;
+  //#endregion
+
   if (!activity) {
     console.error(
       "Property `activity` is required to display component <RichPresence />.",
@@ -194,7 +198,7 @@ export const RichPresence = (props: RichPresenceProps) => {
                 {periodText}
               </div>
             </div>
-          ) : (
+          ) : displayStatusBadges ? (
             // Without period, display status badges
             <div className="rich-presence-content__status">
               {timestampStart ? (
@@ -214,7 +218,7 @@ export const RichPresence = (props: RichPresenceProps) => {
                 </div>
               ) : null}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
