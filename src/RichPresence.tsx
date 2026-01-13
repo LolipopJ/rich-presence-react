@@ -80,7 +80,7 @@ export const RichPresence = (props: RichPresenceProps) => {
   const displayState =
     type === RichPresenceType.LISTENING ? assets?.large_text || "" : state;
   const displayPartySize = party?.size
-    ? `${party.size[0]} / ${party.size[1]}`
+    ? `${party.size[0]}/${party.size[1]}`
     : undefined;
   //#endregion
 
@@ -178,7 +178,13 @@ export const RichPresence = (props: RichPresenceProps) => {
             >
               {displayDetails}
             </div>
-            <div className="rich-presence-content__state" title={displayState}>
+            <div
+              className="rich-presence-content__state"
+              style={{
+                display: displayPartySize ? "none" : undefined,
+              }}
+              title={displayState}
+            >
               {displayState}
             </div>
           </div>
@@ -213,7 +219,7 @@ export const RichPresence = (props: RichPresenceProps) => {
                 <div className="rich-presence-content__status-item rich-presence-content__status-item--secondary">
                   <Team className="rich-presence-content__status-item-icon" />
                   <div className="rich-presence-content__status-item-text">
-                    {displayPartySize}
+                    {displayState} {displayPartySize}
                   </div>
                 </div>
               ) : null}
