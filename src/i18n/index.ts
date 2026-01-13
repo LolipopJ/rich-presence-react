@@ -1,4 +1,4 @@
-import { RichPresenceType } from "../enums";
+import { RichPresenceType } from "@/constants";
 
 const HEADER_TITLE_EN: Record<RichPresenceType, string> = {
   [RichPresenceType.UNKNOWN]: "Doing",

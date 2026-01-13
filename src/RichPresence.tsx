@@ -1,12 +1,12 @@
-import "./styles/index.scss";
+import "@/styles/index.scss";
 
 import React, { type ComponentProps, useEffect, useState } from "react";
 
-import { RichPresenceType } from "./enums";
-import i18n from "./i18n";
-import Play from "./svgs/play.svg?react";
-import Team from "./svgs/team.svg?react";
-import { formatDuration, getDiscordAssetUrl } from "./utils";
+import { RichPresenceType } from "@/constants";
+import i18n from "@/i18n";
+import Play from "@/svgs/play.svg?react";
+import Team from "@/svgs/team.svg?react";
+import { formatDuration, getDiscordAssetUrl } from "@/utils";
 
 export interface RichPresenceProps extends ComponentProps<"div"> {
   activity: RichPresenceActivity;

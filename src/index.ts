@@ -1,7 +1,7 @@
-export { RichPresenceType } from "./enums";
+export { RichPresenceType } from "@/constants";
 export type {
   IGDBDetails,
   RichPresenceActivity,
   RichPresenceProps,
-} from "./RichPresence";
-export { RichPresence as default } from "./RichPresence";
+} from "@/RichPresence";
+export { RichPresence as default } from "@/RichPresence";
