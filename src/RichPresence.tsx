@@ -151,11 +151,18 @@ export const RichPresence = (props: RichPresenceProps) => {
         </div>
         <div className="rich-presence-content">
           <div>
-            <div className="rich-presence-content__name">{displayName}</div>
-            <div className="rich-presence-content__details">
+            <div className="rich-presence-content__name" title={displayName}>
+              {displayName}
+            </div>
+            <div
+              className="rich-presence-content__details"
+              title={displayDetails}
+            >
               {displayDetails}
             </div>
-            <div className="rich-presence-content__state">{displayState}</div>
+            <div className="rich-presence-content__state" title={displayState}>
+              {displayState}
+            </div>
           </div>
           {period ? (
             // With period, display progress bar only
