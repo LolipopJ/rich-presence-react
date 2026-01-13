@@ -30,8 +30,8 @@ export interface RichPresenceActivity {
   party?: {
     size?: [number, number];
   };
-  type?: RichPresenceType;
-  name?: string;
+  type: RichPresenceType;
+  name: string;
   application_id: string | number;
   igdb_details?: IGDBDetails;
   buttons?: string[];
