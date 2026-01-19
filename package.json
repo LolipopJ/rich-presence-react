@@ -1,7 +1,7 @@
 {
   "name": "rich-presence-react",
   "private": false,
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "type": "module",
   "author": "LolipopJ",
   "description": "React component to display Discord rich presence",
