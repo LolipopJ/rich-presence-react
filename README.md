@@ -4,6 +4,20 @@
 
 为了实时获取您的 Discord 动态信息，可以考虑自行部署 [LolipopJ/discord-activity-sender](https://github.com/LolipopJ/discord-activity-sender) 服务。
 
+## 功能
+
+目前实现的动态卡片类型如下：
+
+- [x] “正在玩”卡片
+- [ ] “正在直播”卡片
+- [x] “正在听”卡片
+- [ ] “正在看”卡片
+- [ ] 自定义状态卡片
+- [ ] “正在比赛”卡片
+- [ ] 未知状态卡牌呢
+
+未实现卡片的实际展示效果可能会与 Discord 里的卡片有较大差异。
+
 ## 使用
 
 ```bash
