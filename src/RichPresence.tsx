@@ -1,7 +1,8 @@
-import "@/styles/index.scss";
+import "@/index.scss";
 
 import React, { type ComponentProps, useEffect, useState } from "react";
 
+import Tooltip from "@/components/Tooltip";
 import { RichPresenceType } from "@/constants";
 import i18n from "@/i18n";
 import Play from "@/svgs/play.svg?react";
@@ -142,28 +143,30 @@ export const RichPresence = (props: RichPresenceProps) => {
       <div className="rich-presence-header">{displayHeaderText}</div>
       <div className="rich-presence-content-wrapper">
         <div className="rich-presence-image-wrapper">
-          <img
-            className="rich-presence-image"
-            src={processedAssets?.large_image}
-            title={processedAssets?.large_text}
-            onError={(e) => {
-              const img = e.currentTarget;
-              img.onerror = null;
-              img.src = fallbackLargeImage;
-            }}
-          />
+          <Tooltip text={processedAssets?.large_text}>
+            <img
+              className="rich-presence-image"
+              src={processedAssets?.large_image}
+              onError={(e) => {
+                const img = e.currentTarget;
+                img.onerror = null;
+                img.src = fallbackLargeImage;
+              }}
+            />
+          </Tooltip>
           {processedAssets?.small_image ? (
             <div className="rich-presence-image__overlay">
-              <img
-                className="rich-presence-image__overlay-image"
-                src={processedAssets.small_image}
-                title={processedAssets.small_text}
-                onError={(e) => {
-                  const img = e.currentTarget;
-                  img.onerror = null;
-                  img.src = fallbackSmallImage;
-                }}
-              />
+              <Tooltip text={processedAssets.small_text}>
+                <img
+                  className="rich-presence-image__overlay-image"
+                  src={processedAssets.small_image}
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    img.onerror = null;
+                    img.src = fallbackSmallImage;
+                  }}
+                />
+              </Tooltip>
             </div>
           ) : null}
         </div>

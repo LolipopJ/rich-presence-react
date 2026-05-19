@@ -1,4 +1,4 @@
-@use './mixins.scss' as mixins;
+@use "./styles/mixins.scss" as mixins;
 
 .rich-presence-container {
   --rich-presence-text-color: oklab(0.322446 0.0015464 -0.0105554);
@@ -6,6 +6,13 @@
   --rich-presence-text-color-secondary: oklab(0.502296 0.00311004 -0.0154928);
   --rich-presence-background: oklab(0.999994 0.0000455678 0.0000200868);
   --rich-presence-background-secondary: oklab(0.839398 0.000524133 -0.00559175);
+  --rich-presence-background-surface-high: color-mix(in oklab, hsl(0 calc(1 * 0%) 100% /1) 100%, #000 0%);
+  --rich-presence-border-subtle: color-mix(
+    in oklab,
+    hsl(240 calc(1 * 4%) 60.784% /0.2784313725490196) 100%,
+    hsl(0 0% 0% /0.2784313725490196) 0%
+  );
+  --rich-presence-shadow-high: 0 12px 36px 0 hsl(none 0% 0%/0.12);
 
   padding: 12px;
   display: flex;
@@ -61,7 +68,7 @@
         max-width: 24px;
         min-height: 24px;
         max-height: 24px;
-        border-radius: inherit;
+        border-radius: 2147483647px;
         object-fit: cover;
       }
     }
@@ -210,10 +217,15 @@
   &--theme-dark {
     --rich-presence-text-color: oklab(0.952693 0.000792831 -0.00253612);
     --rich-presence-text-color-positive: oklab(0.666885 -0.110467 0.0576282);
-    --rich-presence-text-color-secondary: oklab(
-      0.745443 0.00131971 -0.00849813
-    );
+    --rich-presence-text-color-secondary: oklab(0.745443 0.00131971 -0.00849813);
     --rich-presence-background: oklab(0.298136 0.00109468 -0.00903396);
     --rich-presence-background-secondary: oklab(0.434021 0.00319432 -0.0160975);
+    --rich-presence-background-surface-high: color-mix(in oklab, hsl(240 calc(1 * 6.494%) 15.098% /1) 100%, #000 0%);
+    --rich-presence-border-subtle: color-mix(
+      in oklab,
+      hsl(240 calc(1 * 4%) 60.784% /0.12156862745098039) 100%,
+      hsl(0 0% 0% /0.12156862745098039) 0%
+    );
+    --rich-presence-shadow-high: 0 12px 24px 0 hsl(none 0% 0%/0.24);
   }
 }
