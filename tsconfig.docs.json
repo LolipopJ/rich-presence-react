@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["docs", "src/types/vite-env.d.ts"],
+  "exclude": ["src", "dist", "dist-docs"]
+}

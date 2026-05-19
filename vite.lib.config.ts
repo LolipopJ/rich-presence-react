@@ -5,7 +5,14 @@ import dts from "vite-plugin-dts";
 import viteBaseConfig from "./vite.base.config";
 
 export default mergeConfig(viteBaseConfig, {
-  plugins: [dts({ outDir: "dist", insertTypesEntry: true, rollupTypes: true })],
+  plugins: [
+    dts({
+      outDir: "dist",
+      insertTypesEntry: true,
+      rollupTypes: true,
+      tsconfigPath: "./tsconfig.lib.json",
+    }),
+  ],
   build: {
     minify: false,
     lib: {
