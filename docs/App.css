@@ -1,5 +1,273 @@
-#root {
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rubik:wght@400;500;700&display=swap");
+
+:root {
+  --discord-bg: #1e1f22;
+  --discord-surface: #2b2d31;
+  --discord-surface-alt: #232428;
+  --discord-elevated: #313338;
+  --discord-border: #3f4147;
+  --discord-text: #f2f3f5;
+  --discord-muted: #b5bac1;
+  --discord-accent: #5865f2;
+  --discord-accent-soft: rgba(88, 101, 242, 0.26);
+  --discord-green: #23a55a;
+  --docs-shadow: 0 22px 56px rgba(0, 0, 0, 0.42);
+}
+
+.docs-shell {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: clamp(20px, 5vw, 52px) clamp(16px, 4vw, 42px) 78px;
+  color: var(--discord-text);
+  font-family: "Rubik", "Segoe UI", sans-serif;
+}
+
+.docs-header {
+  margin-bottom: 30px;
+}
+
+.docs-header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.docs-header__labels {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.docs-header__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--discord-border);
+  background: rgba(88, 101, 242, 0.16);
+  color: #d7dbff;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.docs-header__version {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(88, 101, 242, 0.54);
+  background: rgba(88, 101, 242, 0.14);
+  color: #cdd3ff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.docs-header__github {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--discord-border);
+  background: var(--discord-elevated);
+  color: var(--discord-text);
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.docs-header__github-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.docs-header__github:hover {
+  background: var(--discord-accent);
+  border-color: var(--discord-accent);
+  transform: translateY(-1px);
+}
+
+.docs-header h1 {
+  margin: 0;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.06;
+  letter-spacing: 0.01em;
+}
+
+.docs-header__subtitle {
+  margin: 12px 0 0;
+  max-width: 760px;
+  color: var(--discord-muted);
+  font-size: clamp(15px, 2vw, 18px);
+}
+
+.demo-list {
+  display: grid;
+  gap: 16px;
+}
+
+.demo-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(290px, 0.95fr) minmax(340px, 1.05fr);
+  gap: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(153, 163, 180, 0.3);
+  background-color: transparent;
+  box-shadow: var(--docs-shadow);
+  padding: 16px;
+  overflow: hidden;
+}
+
+.demo-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.demo-card__preview {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(117, 126, 138, 0.42);
+  background: linear-gradient(180deg, #2f3136 0%, #24262b 100%);
+  padding: 14px;
+}
+
+.demo-card[data-theme="light"] .demo-card__preview {
+  border-color: rgba(172, 183, 205, 0.72);
+  background: linear-gradient(180deg, #f3f5fb 0%, #e9edf7 100%);
+}
+
+.demo-card[data-theme="light"] .demo-card__meta {
+  color: #586074;
+}
+
+.demo-card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--discord-muted);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.demo-card__presence-frame {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 224px;
+  border-radius: 10px;
+  border: 1px dashed rgba(88, 101, 242, 0.46);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(88, 101, 242, 0.15), transparent 42%),
+    radial-gradient(circle at 0% 100%, rgba(87, 242, 135, 0.15), transparent 44%),
+    rgba(30, 31, 34, 0.66);
+  padding: 16px;
+}
+
+.demo-card[data-theme="light"] .demo-card__presence-frame {
+  border: 1px dashed rgba(88, 101, 242, 0.34);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(88, 101, 242, 0.16), transparent 42%),
+    radial-gradient(circle at 0% 100%, rgba(87, 242, 135, 0.16), transparent 44%),
+    rgba(251, 253, 255, 0.88);
+}
+
+.demo-card__presence {
+  width: min(100%, 300px);
+  max-width: 300px;
+}
+
+.demo-card__presence > * {
+  width: 100%;
+}
+
+.demo-card__code {
+  min-width: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(88, 101, 242, 0.48);
+  background: linear-gradient(180deg, #1a1b1f 0%, #111216 100%);
+  padding: 12px;
+}
+
+.demo-card__code-label {
+  margin-bottom: 8px;
+  color: #a8b0ff;
+  font-family: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.demo-card pre {
+  margin: 0;
+  max-height: 360px;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.demo-card code {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  font-family: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow: visible;
+}
+
+.demo-card code.hljs {
+  border-radius: 8px;
+  background: transparent;
+  padding: 2px;
+  overflow-x: visible;
+  overflow-y: visible;
+}
+
+.demo-card pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.demo-card pre::-webkit-scrollbar-thumb {
+  background: var(--discord-accent-soft);
+  border-radius: 999px;
+}
+
+.demo-card pre::-webkit-scrollbar-track {
+  background: rgba(20, 21, 24, 0.9);
+  border-radius: 999px;
+}
+
+@media (max-width: 980px) {
+  .docs-header__top {
+    flex-wrap: wrap;
+  }
+
+  .demo-card {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-card__presence-frame {
+    min-height: 196px;
+  }
+
+  .demo-card pre {
+    max-height: 300px;
+  }
 }

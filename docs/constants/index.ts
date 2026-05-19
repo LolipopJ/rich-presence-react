@@ -1,6 +1,39 @@
 import type { RichPresenceProps } from "rich-presence-react";
 
-export const TEST_RICH_PRESENCES: RichPresenceProps[] = [
+import packageJson from "../../package.json";
+
+const normalizeRepositoryUrl = (rawUrl: string): string => {
+  if (!rawUrl) {
+    return packageJson.homepage;
+  }
+
+  if (rawUrl.startsWith("git@github.com:")) {
+    return rawUrl
+      .replace("git@github.com:", "https://github.com/")
+      .replace(/\.git$/u, "");
+  }
+
+  return rawUrl
+    .replace(/^git\+/u, "")
+    .replace(/^git:\/\//u, "https://")
+    .replace(/\.git$/u, "");
+};
+
+const rawRepositoryUrl =
+  typeof packageJson.repository === "string"
+    ? packageJson.repository
+    : packageJson.repository.url;
+
+export const DOCS_PACKAGE_NAME = packageJson.name;
+export const DOCS_PACKAGE_VERSION = packageJson.version;
+export const DOCS_REPOSITORY_URL = normalizeRepositoryUrl(rawRepositoryUrl);
+
+export const HIGHLIGHT_CDN =
+  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1";
+export const HIGHLIGHT_SCRIPT_ID = "hljs-script-cdn";
+export const HIGHLIGHT_STYLE_ID = "hljs-style-cdn";
+
+export const RICH_PRESENCES: RichPresenceProps[] = [
   {
     activity: {
       state: "Workspace: rich-presence-react",
