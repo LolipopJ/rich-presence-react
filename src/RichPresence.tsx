@@ -35,7 +35,7 @@ export interface RichPresenceActivity {
   };
   type: RichPresenceType;
   name: string;
-  application_id: string | number;
+  application_id?: string | number;
   igdb_details?: IGDBDetails;
   buttons?: string[];
 }
@@ -137,99 +137,114 @@ export const RichPresence = (props: RichPresenceProps) => {
 
   return (
     <div
-      className={`rich-presence-container rich-presence-container--theme-${theme} rich-presence-container--size-${size} ${className}`}
+      className={`rich-presence-container rich-presence-container--theme-${theme} rich-presence-container--size-${size} rich-presence-container--type-${type} ${className}`}
       {...rest}
     >
-      <div className="rich-presence-header">{displayHeaderText}</div>
-      <div className="rich-presence-content-wrapper">
-        <div className="rich-presence-image-wrapper">
-          <Tooltip text={processedAssets?.large_text}>
-            <img
-              className="rich-presence-image"
-              src={processedAssets?.large_image}
-              onError={(e) => {
-                const img = e.currentTarget;
-                img.onerror = null;
-                img.src = fallbackLargeImage;
-              }}
-            />
-          </Tooltip>
-          {processedAssets?.small_image ? (
-            <div className="rich-presence-image__overlay">
-              <Tooltip text={processedAssets.small_text}>
+      {type === RichPresenceType.CUSTOM ? (
+        // Custom status content
+        <div className="rich-presence-custom-status">
+          <div className="rich-presence-custom-status__content" title={state}>
+            {state}
+          </div>
+        </div>
+      ) : (
+        // Normal rich presence content
+        <>
+          <div className="rich-presence-header">{displayHeaderText}</div>
+          <div className="rich-presence-content-wrapper">
+            <div className="rich-presence-image-wrapper">
+              <Tooltip text={processedAssets?.large_text}>
                 <img
-                  className="rich-presence-image__overlay-image"
-                  src={processedAssets.small_image}
+                  className="rich-presence-image"
+                  src={processedAssets?.large_image}
                   onError={(e) => {
                     const img = e.currentTarget;
                     img.onerror = null;
-                    img.src = fallbackSmallImage;
+                    img.src = fallbackLargeImage;
                   }}
                 />
               </Tooltip>
+              {processedAssets?.small_image ? (
+                <div className="rich-presence-image__overlay">
+                  <Tooltip text={processedAssets.small_text}>
+                    <img
+                      className="rich-presence-image__overlay-image"
+                      src={processedAssets.small_image}
+                      onError={(e) => {
+                        const img = e.currentTarget;
+                        img.onerror = null;
+                        img.src = fallbackSmallImage;
+                      }}
+                    />
+                  </Tooltip>
+                </div>
+              ) : null}
             </div>
-          ) : null}
-        </div>
-        <div className="rich-presence-content">
-          <div>
-            <div className="rich-presence-content__name" title={displayName}>
-              {displayName}
-            </div>
-            <div
-              className="rich-presence-content__details"
-              title={displayDetails}
-            >
-              {displayDetails}
-            </div>
-            <div
-              className="rich-presence-content__state"
-              style={{
-                display: displayPartySize ? "none" : undefined,
-              }}
-              title={displayState}
-            >
-              {displayState}
-            </div>
-          </div>
-          {period ? (
-            // With period, display progress bar only
-            <div className="rich-presence-content__duration-wrapper">
-              <div className="rich-presence-content__duration-elapsed-time">
-                {elapsedTimeText}
-              </div>
-              <div className="rich-presence-content__duration-progress-wrapper">
+            <div className="rich-presence-content">
+              <div>
                 <div
-                  className="rich-presence-content__duration-progress"
-                  style={{ width: `${progressPercent}%` }}
-                />
+                  className="rich-presence-content__name"
+                  title={displayName}
+                >
+                  {displayName}
+                </div>
+                <div
+                  className="rich-presence-content__details"
+                  title={displayDetails}
+                >
+                  {displayDetails}
+                </div>
+                <div
+                  className="rich-presence-content__state"
+                  style={{
+                    display: displayPartySize ? "none" : undefined,
+                  }}
+                  title={displayState}
+                >
+                  {displayState}
+                </div>
               </div>
-              <div className="rich-presence-content__duration-period">
-                {periodText}
-              </div>
-            </div>
-          ) : displayStatusBadges ? (
-            // Without period, display status badges
-            <div className="rich-presence-content__status">
-              {timestampStart ? (
-                <div className="rich-presence-content__status-item">
-                  <Play className="rich-presence-content__status-item-icon" />
-                  <div className="rich-presence-content__status-item-text">
+              {period ? (
+                // With period, display progress bar only
+                <div className="rich-presence-content__duration-wrapper">
+                  <div className="rich-presence-content__duration-elapsed-time">
                     {elapsedTimeText}
                   </div>
-                </div>
-              ) : null}
-              {displayPartySize ? (
-                <div className="rich-presence-content__status-item rich-presence-content__status-item--secondary">
-                  <Team className="rich-presence-content__status-item-icon" />
-                  <div className="rich-presence-content__status-item-text">
-                    {displayState} {displayPartySize}
+                  <div className="rich-presence-content__duration-progress-wrapper">
+                    <div
+                      className="rich-presence-content__duration-progress"
+                      style={{ width: `${progressPercent}%` }}
+                    />
                   </div>
+                  <div className="rich-presence-content__duration-period">
+                    {periodText}
+                  </div>
+                </div>
+              ) : displayStatusBadges ? (
+                // Without period, display status badges
+                <div className="rich-presence-content__status">
+                  {timestampStart ? (
+                    <div className="rich-presence-content__status-item">
+                      <Play className="rich-presence-content__status-item-icon" />
+                      <div className="rich-presence-content__status-item-text">
+                        {elapsedTimeText}
+                      </div>
+                    </div>
+                  ) : null}
+                  {displayPartySize ? (
+                    <div className="rich-presence-content__status-item rich-presence-content__status-item--secondary">
+                      <Team className="rich-presence-content__status-item-icon" />
+                      <div className="rich-presence-content__status-item-text">
+                        {displayState} {displayPartySize}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
             </div>
-          ) : null}
-        </div>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

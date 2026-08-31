@@ -109,6 +109,15 @@ export const RICH_PRESENCES: RichPresenceProps[] = [
   },
   {
     activity: {
+      type: 4,
+      state: "最茂盛的戀愛靜靜蓋滿地，是否這樣的韻律也算自然定理。",
+      name: "Custom Status",
+    },
+    theme: "light",
+    size: "normal",
+  },
+  {
+    activity: {
       state: "Workspace: rich-presence-react",
       details: "Editing RichPresence.tsx",
       timestamps: {

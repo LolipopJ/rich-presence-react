@@ -74,6 +74,20 @@
     }
   }
 
+  .rich-presence-custom-status {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+
+    &__content {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.2857142857142858;
+    }
+  }
+
   .rich-presence-content {
     align-self: center;
     display: flex;
@@ -227,5 +241,32 @@
       hsl(0 0% 0% /0.12156862745098039) 0%
     );
     --rich-presence-shadow-high: 0 12px 24px 0 hsl(none 0% 0%/0.24);
+  }
+
+  &--type-4 {
+    &::before,
+    &::after {
+      background: inherit;
+      border: inherit;
+      border-radius: 50%;
+      box-shadow: inherit;
+      box-sizing: border-box;
+      content: "";
+      position: absolute;
+    }
+
+    &::before {
+      height: 20px;
+      inset-inline-start: 10px;
+      top: -8px;
+      width: 20px;
+    }
+
+    &::after {
+      height: 10px;
+      inset-inline-start: -3px;
+      top: -15px;
+      width: 10px;
+    }
   }
 }

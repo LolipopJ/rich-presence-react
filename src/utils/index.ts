@@ -1,5 +1,5 @@
 export const getDiscordAssetUrl = (
-  appId: string | number,
+  appId?: string | number,
   asset?: string | number,
 ) => {
   if (
