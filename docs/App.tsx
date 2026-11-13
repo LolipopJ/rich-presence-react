@@ -1,10 +1,15 @@
 import "./App.css";
 import "rich-presence-react/style.css";
 
-import React, { useEffect } from "react";
-import RichPresence from "rich-presence-react";
+import React, { useEffect, useState } from "react";
+import RichPresence, {
+  type RichPresenceActivity,
+  type RichPresenceLocale,
+} from "rich-presence-react";
 
 import {
+  DEMO_CATEGORIES,
+  type DemoCategory,
   DOCS_PACKAGE_NAME,
   DOCS_PACKAGE_VERSION,
   DOCS_REPOSITORY_URL,
@@ -22,12 +27,16 @@ declare global {
   }
 }
 
-type DemoRichPresence = (typeof RICH_PRESENCES)[number];
+type ThemeOption = "light" | "dark";
+type SizeOption = "normal" | "large";
 
-const getReactSnippet = (richPresence: DemoRichPresence): string => {
-  const theme = richPresence.theme ?? "dark";
-  const size = richPresence.size ?? "normal";
-  const activity = JSON.stringify(richPresence.activity, null, 2);
+const getReactSnippet = (
+  activityData: RichPresenceActivity,
+  theme: ThemeOption,
+  size: SizeOption,
+  locale: RichPresenceLocale,
+): string => {
+  const activity = JSON.stringify(activityData, null, 2);
 
   return `import RichPresence from "rich-presence-react";
 import "rich-presence-react/style.css";
@@ -38,10 +47,23 @@ const activity = ${activity};
   activity={activity}
   theme="${theme}"
   size="${size}"
+  locale="${locale}"
 />`;
 };
 
 const App = () => {
+  const [selectedCategory, setSelectedCategory] = useState<
+    DemoCategory | "all"
+  >("all");
+  const [theme, setTheme] = useState<ThemeOption>("light");
+  const [size, setSize] = useState<SizeOption>("normal");
+  const [locale, setLocale] = useState<RichPresenceLocale>("en");
+
+  const filteredPresences =
+    selectedCategory === "all"
+      ? RICH_PRESENCES
+      : RICH_PRESENCES.filter((item) => item.category === selectedCategory);
+
   useEffect(() => {
     const highlightBlocks = () => {
       if (!window.hljs) {
@@ -51,7 +73,9 @@ const App = () => {
       document
         .querySelectorAll<HTMLElement>(".demo-card__code code")
         .forEach((block) => {
-          window.hljs?.highlightElement(block);
+          if (block.dataset.highlighted !== "yes") {
+            window.hljs?.highlightElement(block);
+          }
         });
     };
 
@@ -89,7 +113,7 @@ const App = () => {
     return () => {
       script.removeEventListener("load", highlightBlocks);
     };
-  }, []);
+  }, [selectedCategory, theme, size, locale]);
 
   return (
     <main className="docs-shell">
@@ -124,23 +148,99 @@ const App = () => {
         </p>
       </header>
 
+      <section className="docs-controls" aria-label="Preview controls">
+        <div className="docs-toolbar">
+          <div className="docs-toolbar__group" role="group" aria-label="Theme">
+            <span className="docs-toolbar__label">Theme</span>
+            <div className="docs-segmented">
+              {(["light", "dark"] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`docs-segmented__btn${
+                    theme === option ? " is-active" : ""
+                  }`}
+                  onClick={() => setTheme(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="docs-toolbar__group" role="group" aria-label="Size">
+            <span className="docs-toolbar__label">Size</span>
+            <div className="docs-segmented">
+              {(["normal", "large"] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`docs-segmented__btn${
+                    size === option ? " is-active" : ""
+                  }`}
+                  onClick={() => setSize(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="docs-toolbar__group" role="group" aria-label="Locale">
+            <span className="docs-toolbar__label">Locale</span>
+            <div className="docs-segmented">
+              {(["en", "zh"] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`docs-segmented__btn${
+                    locale === option ? " is-active" : ""
+                  }`}
+                  onClick={() => setLocale(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <nav className="docs-categories" aria-label="Activity types">
+          {DEMO_CATEGORIES.map((category) => (
+            <button
+              key={category.id}
+              type="button"
+              className={`docs-category-pill${
+                selectedCategory === category.id ? " is-active" : ""
+              }`}
+              onClick={() => setSelectedCategory(category.id)}
+            >
+              {category.label}
+            </button>
+          ))}
+        </nav>
+      </section>
+
       <section className="demo-list">
-        {RICH_PRESENCES.map((richPresence, index) => {
-          const theme = richPresence.theme ?? "dark";
-          const size = richPresence.size ?? "normal";
-          const snippet = getReactSnippet(richPresence);
+        {filteredPresences.map((richPresence) => {
+          const snippet = getReactSnippet(
+            richPresence.activity,
+            theme,
+            size,
+            locale,
+          );
 
           return (
             <article
               className="demo-card"
               data-theme={theme}
-              key={`${richPresence.activity.application_id}-${index}`}
+              key={richPresence.id}
             >
               <div className="demo-card__preview">
                 <div className="demo-card__meta">
-                  <span>Example {index + 1}</span>
-                  <span>
-                    {theme} / {size}
+                  <span className="demo-card__title">{richPresence.title}</span>
+                  <span className="demo-card__config">
+                    {theme} / {size} / {locale}
                   </span>
                 </div>
                 <div className="demo-card__presence-frame">
@@ -149,6 +249,7 @@ const App = () => {
                       activity={richPresence.activity}
                       theme={theme}
                       size={size}
+                      locale={locale}
                     />
                   </div>
                 </div>
@@ -157,7 +258,9 @@ const App = () => {
               <div className="demo-card__code">
                 <div className="demo-card__code-label">React</div>
                 <pre>
-                  <code className="language-jsx">{snippet}</code>
+                  <code className="language-jsx" key={snippet}>
+                    {snippet}
+                  </code>
                 </pre>
               </div>
             </article>

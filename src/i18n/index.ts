@@ -1,4 +1,11 @@
-import { RichPresenceType } from "@/constants";
+import { type RichPresenceLocale, RichPresenceType } from "@/constants";
+
+export interface RichPresenceTranslations {
+  headerTitle: Record<RichPresenceType, string>;
+  actions: {
+    watchStream: string;
+  };
+}
 
 const HEADER_TITLE_EN: Record<RichPresenceType, string> = {
   [RichPresenceType.UNKNOWN]: "Doing",
@@ -20,12 +27,18 @@ const HEADER_TITLE_ZH: Record<RichPresenceType, string> = {
   [RichPresenceType.COMPETING]: "正在竞赛",
 };
 
-export const i18n = {
+export const i18n: Record<RichPresenceLocale, RichPresenceTranslations> = {
   en: {
     headerTitle: HEADER_TITLE_EN,
+    actions: {
+      watchStream: "Watch Stream",
+    },
   },
   zh: {
     headerTitle: HEADER_TITLE_ZH,
+    actions: {
+      watchStream: "观看直播",
+    },
   },
 };
 

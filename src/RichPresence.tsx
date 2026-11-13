@@ -3,16 +3,41 @@ import "@/index.scss";
 import React, { type ComponentProps, useEffect, useState } from "react";
 
 import Tooltip from "@/components/Tooltip";
-import { RichPresenceType } from "@/constants";
-import i18n from "@/i18n";
+import {
+  type RichPresenceLocale,
+  type RichPresenceStatusDisplayType,
+  RichPresenceType,
+} from "@/constants";
+import Clock from "@/svgs/clock.svg?react";
 import Play from "@/svgs/play.svg?react";
+import Stream from "@/svgs/stream.svg?react";
 import Team from "@/svgs/team.svg?react";
-import { formatDuration, getDiscordAssetUrl } from "@/utils";
+import Trophy from "@/svgs/trophy.svg?react";
+import Watch from "@/svgs/watch.svg?react";
+import { formatDuration } from "@/utils";
+import {
+  type ElapsedIconKind,
+  resolveActivityPresentation,
+} from "@/utils/presentation";
+
+export interface RichPresenceEmoji {
+  id?: string | number | null;
+  name?: string;
+  animated?: boolean;
+}
+
+export type RichPresenceButton =
+  | string
+  | {
+      label: string;
+      url?: string;
+    };
 
 export interface RichPresenceProps extends ComponentProps<"div"> {
   activity: RichPresenceActivity;
   theme?: "light" | "dark";
   size?: "normal" | "large";
+  locale?: RichPresenceLocale;
   fallbackLargeImage?: string;
   fallbackSmallImage?: string;
 }
@@ -33,11 +58,14 @@ export interface RichPresenceActivity {
   party?: {
     size?: [number, number];
   };
-  type: RichPresenceType;
+  type: RichPresenceType | (number & {});
   name: string;
+  url?: string;
+  emoji?: RichPresenceEmoji;
+  status_display_type?: RichPresenceStatusDisplayType;
   application_id?: string | number;
   igdb_details?: IGDBDetails;
-  buttons?: string[];
+  buttons?: RichPresenceButton[];
 }
 
 export interface IGDBDetails {
@@ -47,54 +75,73 @@ export interface IGDBDetails {
   url?: string;
 }
 
+const ELAPSED_ICON_MAP: Record<
+  ElapsedIconKind,
+  React.ComponentType<React.SVGProps<SVGSVGElement>>
+> = {
+  play: Play,
+  stream: Stream,
+  clock: Clock,
+  watch: Watch,
+  trophy: Trophy,
+};
+
+const parseTimestampMs = (value?: number): number | undefined => {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return undefined;
+  }
+  const ms = new Date(value).getTime();
+  return Number.isFinite(ms) ? ms : undefined;
+};
+
 export const RichPresence = (props: RichPresenceProps) => {
   const {
     activity,
     theme = "dark",
     size = "normal",
+    locale = "zh",
     fallbackLargeImage = `data:image/svg+xml;utf8,<svg width='100' height='100' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' fill='oklab(0.839398 0.000524133 -0.00559175)' /></svg>`,
     fallbackSmallImage = `data:image/svg+xml;utf8,<svg width='32' height='32' xmlns='http://www.w3.org/2000/svg'><circle cx='16' cy='16' r='16' fill='transparent' /></svg>`,
     className = "",
     ...rest
   } = props;
   const {
-    state,
-    details,
     timestamps,
     assets,
     party,
     type = RichPresenceType.UNKNOWN,
-    name,
-    application_id,
   } = activity ?? {};
 
   /** Current timestamp in milliseconds */
   const [now, setNow] = useState<number>(() => Date.now());
+  const [failedLargeImageUrl, setFailedLargeImageUrl] = useState<string | null>(
+    null,
+  );
+  const [failedSmallImageUrl, setFailedSmallImageUrl] = useState<string | null>(
+    null,
+  );
+  const [failedEmojiUrl, setFailedEmojiUrl] = useState<string | null>(null);
 
-  //#region Display texts
-  const displayHeaderText =
-    type === RichPresenceType.LISTENING
-      ? `${i18n["zh"].headerTitle[type]} ${name}`
-      : i18n["zh"].headerTitle[type];
-  const displayName = type === RichPresenceType.LISTENING ? details : name;
-  const displayDetails = type === RichPresenceType.LISTENING ? state : details;
-  const displayState =
-    type === RichPresenceType.LISTENING ? assets?.large_text || "" : state;
+  const presentation = resolveActivityPresentation(
+    activity ?? { type: RichPresenceType.UNKNOWN, name: "" },
+    locale,
+  );
+
   const displayPartySize = party?.size
     ? `${party.size[0]}/${party.size[1]}`
     : undefined;
-  //#endregion
 
   //#region Timestamps and duration
-  const timestampStart = timestamps?.start
-    ? new Date(timestamps.start).getTime()
-    : undefined;
-  const timestampEnd = timestamps?.end
-    ? new Date(timestamps.end).getTime()
-    : undefined;
+  const timestampStart = parseTimestampMs(timestamps?.start);
+  const timestampEnd = parseTimestampMs(timestamps?.end);
   const period =
-    timestampEnd && timestampStart ? timestampEnd - timestampStart : undefined;
-  const elapsedMs = timestampStart ? Math.max(0, now - timestampStart) : 0;
+    timestampEnd !== undefined &&
+    timestampStart !== undefined &&
+    timestampEnd > timestampStart
+      ? timestampEnd - timestampStart
+      : undefined;
+  const elapsedMs =
+    timestampStart !== undefined ? Math.max(0, now - timestampStart) : 0;
   const elapsedTimeText = period
     ? elapsedMs > period
       ? formatDuration(period)
@@ -107,25 +154,11 @@ export const RichPresence = (props: RichPresenceProps) => {
       : undefined;
 
   useEffect(() => {
-    if (timestampStart) {
+    if (timestampStart !== undefined) {
       const updateNowIntervalId = setInterval(() => setNow(Date.now()), 1000);
       return () => clearInterval(updateNowIntervalId);
     }
   }, [timestampStart]);
-  //#endregion
-
-  //#region Resolve assets' urls
-  const processedAssets = assets
-    ? {
-        ...assets,
-        small_image: getDiscordAssetUrl(application_id, assets.small_image),
-        large_image: getDiscordAssetUrl(application_id, assets.large_image),
-      }
-    : undefined;
-  //#endregion
-
-  //#region Render conditions
-  const displayStatusBadges = timestampStart || displayPartySize;
   //#endregion
 
   if (!activity) {
@@ -135,77 +168,172 @@ export const RichPresence = (props: RichPresenceProps) => {
     return null;
   }
 
+  const hasValidLargeImage = Boolean(
+    presentation.largeImageUrl &&
+    failedLargeImageUrl !== presentation.largeImageUrl,
+  );
+  const largeImageSrc = hasValidLargeImage
+    ? presentation.largeImageUrl
+    : fallbackLargeImage || undefined;
+  const smallImageSrc =
+    presentation.smallImageUrl &&
+    failedSmallImageUrl !== presentation.smallImageUrl
+      ? presentation.smallImageUrl
+      : fallbackSmallImage || undefined;
+  const hasValidEmojiImage = Boolean(
+    presentation.customEmojiUrl &&
+    failedEmojiUrl !== presentation.customEmojiUrl,
+  );
+  const emojiFallbackText = !hasValidEmojiImage
+    ? (presentation.customEmojiText ?? activity.emoji?.name)
+    : undefined;
+
+  const isWideMedia = presentation.mediaAspect === "16:9" && hasValidLargeImage;
+  const displayStatusBadges =
+    (!period && timestampStart !== undefined) || displayPartySize;
+  const showTertiaryLine = Boolean(
+    presentation.tertiaryText &&
+    !(
+      displayPartySize && presentation.tertiaryText === presentation.partyState
+    ),
+  );
+  const ElapsedIcon = ELAPSED_ICON_MAP[presentation.elapsedIcon];
+  const elapsedModifier =
+    presentation.normalizedType === RichPresenceType.STREAMING
+      ? " rich-presence-content__status-item--streaming"
+      : presentation.normalizedType === RichPresenceType.UNKNOWN
+        ? " rich-presence-content__status-item--neutral"
+        : "";
+
   return (
     <div
-      className={`rich-presence-container rich-presence-container--theme-${theme} rich-presence-container--size-${size} rich-presence-container--type-${type} ${className}`}
+      className={`rich-presence-container rich-presence-container--theme-${theme} rich-presence-container--size-${size} rich-presence-container--type-${type}${className ? ` ${className}` : ""}`}
       {...rest}
     >
-      {type === RichPresenceType.CUSTOM ? (
+      {presentation.normalizedType === RichPresenceType.CUSTOM ? (
         // Custom status content
-        <div className="rich-presence-custom-status">
-          <div className="rich-presence-custom-status__content" title={state}>
-            {state}
+        <div
+          className={`rich-presence-custom-status${
+            presentation.isEmojiOnlyCustom
+              ? " rich-presence-custom-status--emoji-only"
+              : ""
+          }`}
+        >
+          <div
+            className="rich-presence-custom-status__content"
+            title={presentation.customStatusText ?? activity.emoji?.name}
+          >
+            {hasValidEmojiImage && presentation.customEmojiUrl ? (
+              <img
+                className="rich-presence-custom-status__emoji-image"
+                src={presentation.customEmojiUrl}
+                alt={activity.emoji?.name ?? ""}
+                onError={() => {
+                  if (
+                    presentation.customEmojiUrl &&
+                    failedEmojiUrl !== presentation.customEmojiUrl
+                  ) {
+                    setFailedEmojiUrl(presentation.customEmojiUrl);
+                  }
+                }}
+              />
+            ) : emojiFallbackText ? (
+              <span className="rich-presence-custom-status__emoji">
+                {emojiFallbackText}
+              </span>
+            ) : null}
+            {presentation.customStatusText ? (
+              <span className="rich-presence-custom-status__text">
+                {presentation.customStatusText}
+              </span>
+            ) : null}
           </div>
         </div>
       ) : (
-        // Normal rich presence content
+        // Standard rich presence card
         <>
-          <div className="rich-presence-header">{displayHeaderText}</div>
+          <div className="rich-presence-header">
+            {presentation.showHeaderStreamIcon ? (
+              <Stream className="rich-presence-header__icon" />
+            ) : null}
+            <span className="rich-presence-header__text">
+              {presentation.headerText}
+            </span>
+          </div>
           <div className="rich-presence-content-wrapper">
-            <div className="rich-presence-image-wrapper">
-              <Tooltip text={processedAssets?.large_text}>
-                <img
-                  className="rich-presence-image"
-                  src={processedAssets?.large_image}
-                  onError={(e) => {
-                    const img = e.currentTarget;
-                    img.onerror = null;
-                    img.src = fallbackLargeImage;
-                  }}
-                />
-              </Tooltip>
-              {processedAssets?.small_image ? (
-                <div className="rich-presence-image__overlay">
-                  <Tooltip text={processedAssets.small_text}>
-                    <img
-                      className="rich-presence-image__overlay-image"
-                      src={processedAssets.small_image}
-                      onError={(e) => {
-                        const img = e.currentTarget;
-                        img.onerror = null;
-                        img.src = fallbackSmallImage;
-                      }}
-                    />
-                  </Tooltip>
-                </div>
-              ) : null}
-            </div>
+            {presentation.showMediaBox ? (
+              <div
+                className={`rich-presence-image-wrapper${
+                  isWideMedia ? " rich-presence-image-wrapper--wide" : ""
+                }`}
+              >
+                <Tooltip text={assets?.large_text}>
+                  <img
+                    className={`rich-presence-image${
+                      isWideMedia ? " rich-presence-image--wide" : ""
+                    }`}
+                    src={largeImageSrc}
+                    alt={assets?.large_text ?? presentation.title ?? ""}
+                    onError={() => {
+                      if (
+                        presentation.largeImageUrl &&
+                        failedLargeImageUrl !== presentation.largeImageUrl
+                      ) {
+                        setFailedLargeImageUrl(presentation.largeImageUrl);
+                      }
+                    }}
+                  />
+                </Tooltip>
+                {assets?.small_image !== undefined &&
+                assets.small_image !== "" ? (
+                  <div className="rich-presence-image__overlay">
+                    <Tooltip text={assets?.small_text}>
+                      <img
+                        className="rich-presence-image__overlay-image"
+                        src={smallImageSrc}
+                        alt={assets?.small_text ?? ""}
+                        onError={() => {
+                          if (
+                            presentation.smallImageUrl &&
+                            failedSmallImageUrl !== presentation.smallImageUrl
+                          ) {
+                            setFailedSmallImageUrl(presentation.smallImageUrl);
+                          }
+                        }}
+                      />
+                    </Tooltip>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
             <div className="rich-presence-content">
               <div>
-                <div
-                  className="rich-presence-content__name"
-                  title={displayName}
-                >
-                  {displayName}
-                </div>
-                <div
-                  className="rich-presence-content__details"
-                  title={displayDetails}
-                >
-                  {displayDetails}
-                </div>
-                <div
-                  className="rich-presence-content__state"
-                  style={{
-                    display: displayPartySize ? "none" : undefined,
-                  }}
-                  title={displayState}
-                >
-                  {displayState}
-                </div>
+                {presentation.title ? (
+                  <div
+                    className="rich-presence-content__name"
+                    title={presentation.title}
+                  >
+                    {presentation.title}
+                  </div>
+                ) : null}
+                {presentation.subtitle ? (
+                  <div
+                    className="rich-presence-content__details"
+                    title={presentation.subtitle}
+                  >
+                    {presentation.subtitle}
+                  </div>
+                ) : null}
+                {showTertiaryLine ? (
+                  <div
+                    className="rich-presence-content__state"
+                    title={presentation.tertiaryText}
+                  >
+                    {presentation.tertiaryText}
+                  </div>
+                ) : null}
               </div>
               {period ? (
-                // With period, display progress bar only
                 <div className="rich-presence-content__duration-wrapper">
                   <div className="rich-presence-content__duration-elapsed-time">
                     {elapsedTimeText}
@@ -220,12 +348,14 @@ export const RichPresence = (props: RichPresenceProps) => {
                     {periodText}
                   </div>
                 </div>
-              ) : displayStatusBadges ? (
-                // Without period, display status badges
+              ) : null}
+              {displayStatusBadges ? (
                 <div className="rich-presence-content__status">
-                  {timestampStart ? (
-                    <div className="rich-presence-content__status-item">
-                      <Play className="rich-presence-content__status-item-icon" />
+                  {!period && timestampStart !== undefined ? (
+                    <div
+                      className={`rich-presence-content__status-item${elapsedModifier}`}
+                    >
+                      <ElapsedIcon className="rich-presence-content__status-item-icon" />
                       <div className="rich-presence-content__status-item-text">
                         {elapsedTimeText}
                       </div>
@@ -235,7 +365,9 @@ export const RichPresence = (props: RichPresenceProps) => {
                     <div className="rich-presence-content__status-item rich-presence-content__status-item--secondary">
                       <Team className="rich-presence-content__status-item-icon" />
                       <div className="rich-presence-content__status-item-text">
-                        {displayState} {displayPartySize}
+                        {presentation.partyState
+                          ? `${presentation.partyState} ${displayPartySize}`
+                          : displayPartySize}
                       </div>
                     </div>
                   ) : null}
@@ -243,6 +375,47 @@ export const RichPresence = (props: RichPresenceProps) => {
               ) : null}
             </div>
           </div>
+          {presentation.buttons.length > 0 ? (
+            <div className="rich-presence-actions">
+              {presentation.buttons.map((button, index) => {
+                const buttonClassName = `rich-presence-action-button${
+                  button.isPrimary
+                    ? " rich-presence-action-button--primary"
+                    : ""
+                }`;
+
+                if (button.url) {
+                  return (
+                    <a
+                      key={`${button.label}-${index}`}
+                      className={buttonClassName}
+                      href={button.url}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      title={button.label}
+                    >
+                      <span className="rich-presence-action-button__label">
+                        {button.label}
+                      </span>
+                    </a>
+                  );
+                }
+
+                return (
+                  <button
+                    key={`${button.label}-${index}`}
+                    type="button"
+                    className={`${buttonClassName} rich-presence-action-button--static`}
+                    title={button.label}
+                  >
+                    <span className="rich-presence-action-button__label">
+                      {button.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </>
       )}
     </div>
