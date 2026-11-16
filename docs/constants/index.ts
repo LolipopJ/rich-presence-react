@@ -96,7 +96,7 @@ export const DEMO_CATEGORIES: { id: DemoCategory | "all"; label: string }[] = [
 ];
 
 export const RICH_PRESENCES: DemoRichPresenceItem[] = [
-  // Playing (2)
+  // Playing (3)
   {
     id: "playing-vscode",
     category: "playing",
@@ -140,11 +140,40 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
         large_image: "614058326266740737",
       },
       party: {
+        id: "party1",
         size: [2, 8],
       },
       type: RichPresenceType.PLAYING,
       name: "FINAL FANTASY XIV",
       application_id: "478143453536976896",
+    },
+  },
+  {
+    id: "playing-igdb-countdown",
+    category: "playing",
+    title: "Playing — Hollow Knight (IGDB Assets + Countdown)",
+    activity: {
+      type: RichPresenceType.PLAYING,
+      name: "Hollow Knight",
+      details: "Pantheon of Hallownest",
+      state: "Boss Rush",
+      timestamps: {
+        end: Date.now() + 900000,
+      },
+      assets: {
+        small_text: "",
+        small_image: "",
+        large_text: "Hollow Knight",
+        large_image:
+          "https://images.igdb.com/igdb/image/upload/t_thumb/co1rgi.jpg",
+      },
+      igdb_details: {
+        artworks: [],
+        storyline: "",
+        summary:
+          "Forge your own path in Hollow Knight! An epic action adventure through a vast ruined kingdom of insects and heroes.",
+        url: "https://www.igdb.com/games/hollow-knight",
+      },
     },
   },
 
@@ -223,8 +252,10 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
     activity: {
       type: RichPresenceType.LISTENING,
       name: "Spotify",
+      flags: 48,
       details: "Midnight City",
       state: "M83",
+      sync_id: "1eyzqe2QqGZUmfcPZtrIyt",
       status_display_type: RichPresenceStatusDisplayType.STATE,
       timestamps: {
         start: Date.now() - 135000,
@@ -303,6 +334,7 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
     activity: {
       type: RichPresenceType.CUSTOM,
       name: "Custom Status",
+      state: null,
       emoji: {
         name: "🚀",
         id: null,

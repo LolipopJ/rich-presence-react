@@ -5,6 +5,9 @@ export interface RichPresenceTranslations {
   actions: {
     watchStream: string;
   };
+  status: {
+    remainingTime: (time: string) => string;
+  };
 }
 
 const HEADER_TITLE_EN: Record<RichPresenceType, string> = {
@@ -33,11 +36,17 @@ export const i18n: Record<RichPresenceLocale, RichPresenceTranslations> = {
     actions: {
       watchStream: "Watch Stream",
     },
+    status: {
+      remainingTime: (time) => `${time} left`,
+    },
   },
   zh: {
     headerTitle: HEADER_TITLE_ZH,
     actions: {
       watchStream: "观看直播",
+    },
+    status: {
+      remainingTime: (time) => `剩余 ${time}`,
     },
   },
 };

@@ -52,10 +52,37 @@ const ELAPSED_ICON_BY_TYPE: Record<RichPresenceType, ElapsedIconKind> = {
   [RichPresenceType.UNKNOWN]: "clock",
 };
 
-const nonEmpty = (value?: string): string | undefined =>
+const nonEmpty = (value?: string | null): string | undefined =>
   typeof value === "string" && value.trim().length > 0 ? value : undefined;
 
-export const normalizeRichPresenceType = (type?: number): RichPresenceType =>
+const dedupeTextLines = (lines: {
+  title?: string;
+  subtitle?: string;
+  tertiaryText?: string;
+}) => {
+  const seen = new Set<string>();
+  const takeUnique = (value?: string): string | undefined => {
+    if (!value) {
+      return undefined;
+    }
+    const key = value.trim();
+    if (!key || seen.has(key)) {
+      return undefined;
+    }
+    seen.add(key);
+    return value;
+  };
+
+  return {
+    title: takeUnique(lines.title),
+    subtitle: takeUnique(lines.subtitle),
+    tertiaryText: takeUnique(lines.tertiaryText),
+  };
+};
+
+export const normalizeRichPresenceType = (
+  type?: number | null,
+): RichPresenceType =>
   typeof type === "number" && VALID_TYPES.has(type)
     ? (type as RichPresenceType)
     : RichPresenceType.UNKNOWN;
@@ -85,29 +112,29 @@ const resolveTitleSubjectLines = (activity: RichPresenceActivity) => {
     activity.status_display_type === RichPresenceStatusDisplayType.STATE &&
     state
   ) {
-    return {
+    return dedupeTextLines({
       title: state,
       subtitle: details ?? name,
       tertiaryText: details ? name : undefined,
-    };
+    });
   }
 
   if (
     activity.status_display_type === RichPresenceStatusDisplayType.DETAILS &&
     details
   ) {
-    return {
+    return dedupeTextLines({
       title: details,
       subtitle: name,
       tertiaryText: state,
-    };
+    });
   }
 
-  return {
+  return dedupeTextLines({
     title: name ?? details,
     subtitle: name ? details : undefined,
     tertiaryText: state,
-  };
+  });
 };
 
 const resolveStreamingLines = (activity: RichPresenceActivity) => {
@@ -120,29 +147,29 @@ const resolveStreamingLines = (activity: RichPresenceActivity) => {
     activity.status_display_type === RichPresenceStatusDisplayType.STATE &&
     state
   ) {
-    return {
+    return dedupeTextLines({
       title: state,
       subtitle: details ?? name,
       tertiaryText: details ? (largeText ?? name) : largeText,
-    };
+    });
   }
 
   if (
     activity.status_display_type === RichPresenceStatusDisplayType.DETAILS &&
     details
   ) {
-    return {
+    return dedupeTextLines({
       title: details,
       subtitle: state ?? name,
       tertiaryText: state ? (largeText ?? name) : largeText,
-    };
+    });
   }
 
-  return {
+  return dedupeTextLines({
     title: details ?? name,
     subtitle: details ? (state ?? name) : state,
     tertiaryText: details && state ? (largeText ?? name) : largeText,
-  };
+  });
 };
 
 const resolveButtons = (
@@ -155,19 +182,21 @@ const resolveButtons = (
   }
 
   const normalizedButtons: ResolvedActionButton[] = [];
-  for (const item of activity.buttons ?? []) {
-    if (typeof item === "string") {
-      const label = nonEmpty(item);
-      if (label) {
-        normalizedButtons.push({ label });
-      }
-    } else if (item && typeof item === "object") {
-      const label = nonEmpty(item.label);
-      if (label) {
-        normalizedButtons.push({
-          label,
-          url: getSafeExternalUrl(item.url),
-        });
+  if (Array.isArray(activity.buttons)) {
+    for (const item of activity.buttons) {
+      if (typeof item === "string") {
+        const label = nonEmpty(item);
+        if (label) {
+          normalizedButtons.push({ label });
+        }
+      } else if (item && typeof item === "object") {
+        const label = nonEmpty(item.label);
+        if (label) {
+          normalizedButtons.push({
+            label,
+            url: getSafeExternalUrl(item.url),
+          });
+        }
       }
     }
   }

@@ -8,6 +8,7 @@ import {
   type RichPresenceStatusDisplayType,
   RichPresenceType,
 } from "@/constants";
+import i18n from "@/i18n";
 import Clock from "@/svgs/clock.svg?react";
 import Play from "@/svgs/play.svg?react";
 import Stream from "@/svgs/stream.svg?react";
@@ -22,15 +23,15 @@ import {
 
 export interface RichPresenceEmoji {
   id?: string | number | null;
-  name?: string;
-  animated?: boolean;
+  name?: string | null;
+  animated?: boolean | null;
 }
 
 export type RichPresenceButton =
   | string
   | {
       label: string;
-      url?: string;
+      url?: string | null;
     };
 
 export interface RichPresenceProps extends ComponentProps<"div"> {
@@ -38,41 +39,58 @@ export interface RichPresenceProps extends ComponentProps<"div"> {
   theme?: "light" | "dark";
   size?: "normal" | "large";
   locale?: RichPresenceLocale;
-  fallbackLargeImage?: string;
-  fallbackSmallImage?: string;
+  fallbackLargeImage?: string | null;
+  fallbackSmallImage?: string | null;
 }
 
 export interface RichPresenceActivity {
-  state?: string;
-  details?: string;
+  id?: string | null;
+  state?: string | null;
+  state_url?: string | null;
+  details?: string | null;
+  details_url?: string | null;
   timestamps?: {
-    start?: number;
-    end?: number;
-  };
+    start?: number | null;
+    end?: number | null;
+  } | null;
   assets?: {
-    small_text?: string;
-    small_image?: string | number;
-    large_text?: string;
-    large_image?: string | number;
-  };
+    small_text?: string | null;
+    small_image?: string | number | null;
+    small_url?: string | null;
+    large_text?: string | null;
+    large_image?: string | number | null;
+    large_url?: string | null;
+    invite_cover_image?: string | number | null;
+  } | null;
   party?: {
-    size?: [number, number];
-  };
+    id?: string | null;
+    size?: [number, number] | number[] | null;
+  } | null;
   type: RichPresenceType | (number & {});
-  name: string;
-  url?: string;
-  emoji?: RichPresenceEmoji;
-  status_display_type?: RichPresenceStatusDisplayType;
-  application_id?: string | number;
-  igdb_details?: IGDBDetails;
-  buttons?: RichPresenceButton[];
+  flags?: number | null;
+  name?: string | null;
+  url?: string | null;
+  sync_id?: string | null;
+  platform?: string | null;
+  supported_platforms?: string[] | null;
+  emoji?: RichPresenceEmoji | null;
+  status_display_type?: RichPresenceStatusDisplayType | (number & {}) | null;
+  application_id?: string | number | null;
+  parent_application_id?: string | number | null;
+  igdb_details?: IGDBDetails | null;
+  buttons?: RichPresenceButton[] | null;
+  secrets?: {
+    join?: string | null;
+    spectate?: string | null;
+  } | null;
+  metadata?: Record<string, unknown> | null;
 }
 
 export interface IGDBDetails {
-  artworks?: string[];
-  storyline?: string;
-  summary?: string;
-  url?: string;
+  artworks?: string[] | null;
+  storyline?: string | null;
+  summary?: string | null;
+  url?: string | null;
 }
 
 const ELAPSED_ICON_MAP: Record<
@@ -86,7 +104,7 @@ const ELAPSED_ICON_MAP: Record<
   trophy: Trophy,
 };
 
-const parseTimestampMs = (value?: number): number | undefined => {
+const parseTimestampMs = (value?: number | null): number | undefined => {
   if (typeof value !== "number" || !Number.isFinite(value)) {
     return undefined;
   }
@@ -105,12 +123,11 @@ export const RichPresence = (props: RichPresenceProps) => {
     className = "",
     ...rest
   } = props;
-  const {
-    timestamps,
-    assets,
-    party,
-    type = RichPresenceType.UNKNOWN,
-  } = activity ?? {};
+  const { timestamps, assets, party, type } = activity ?? {};
+  const containerType =
+    typeof type === "number" && Number.isFinite(type)
+      ? type
+      : RichPresenceType.UNKNOWN;
 
   /** Current timestamp in milliseconds */
   const [now, setNow] = useState<number>(() => Date.now());
@@ -127,9 +144,16 @@ export const RichPresence = (props: RichPresenceProps) => {
     locale,
   );
 
-  const displayPartySize = party?.size
-    ? `${party.size[0]}/${party.size[1]}`
-    : undefined;
+  const partySize = party?.size;
+  const displayPartySize =
+    Array.isArray(partySize) &&
+    partySize.length >= 2 &&
+    typeof partySize[0] === "number" &&
+    typeof partySize[1] === "number" &&
+    Number.isFinite(partySize[0]) &&
+    Number.isFinite(partySize[1])
+      ? `${partySize[0]}/${partySize[1]}`
+      : undefined;
 
   //#region Timestamps and duration
   const timestampStart = parseTimestampMs(timestamps?.start);
@@ -140,13 +164,20 @@ export const RichPresence = (props: RichPresenceProps) => {
     timestampEnd > timestampStart
       ? timestampEnd - timestampStart
       : undefined;
+  const isCountdownOnly =
+    timestampStart === undefined && timestampEnd !== undefined;
   const elapsedMs =
     timestampStart !== undefined ? Math.max(0, now - timestampStart) : 0;
+  const remainingMs = isCountdownOnly ? Math.max(0, timestampEnd - now) : 0;
   const elapsedTimeText = period
     ? elapsedMs > period
       ? formatDuration(period)
       : formatDuration(elapsedMs)
     : formatDuration(elapsedMs);
+  const translations = i18n[locale] ?? i18n.zh;
+  const countdownTimeText = isCountdownOnly
+    ? translations.status.remainingTime(formatDuration(remainingMs))
+    : undefined;
   const periodText = formatDuration(period);
   const progressPercent =
     typeof elapsedMs === "number" && typeof period === "number"
@@ -154,11 +185,11 @@ export const RichPresence = (props: RichPresenceProps) => {
       : undefined;
 
   useEffect(() => {
-    if (timestampStart !== undefined) {
+    if (timestampStart !== undefined || timestampEnd !== undefined) {
       const updateNowIntervalId = setInterval(() => setNow(Date.now()), 1000);
       return () => clearInterval(updateNowIntervalId);
     }
-  }, [timestampStart]);
+  }, [timestampStart, timestampEnd]);
   //#endregion
 
   if (!activity) {
@@ -175,6 +206,11 @@ export const RichPresence = (props: RichPresenceProps) => {
   const largeImageSrc = hasValidLargeImage
     ? presentation.largeImageUrl
     : fallbackLargeImage || undefined;
+  const hasSmallImage =
+    assets?.small_image != null &&
+    (typeof assets.small_image === "number"
+      ? Number.isFinite(assets.small_image)
+      : String(assets.small_image).trim() !== "");
   const smallImageSrc =
     presentation.smallImageUrl &&
     failedSmallImageUrl !== presentation.smallImageUrl
@@ -184,13 +220,20 @@ export const RichPresence = (props: RichPresenceProps) => {
     presentation.customEmojiUrl &&
     failedEmojiUrl !== presentation.customEmojiUrl,
   );
+  const fallbackEmojiName =
+    typeof activity.emoji?.name === "string" &&
+    activity.emoji.name.trim().length > 0
+      ? activity.emoji.name
+      : undefined;
   const emojiFallbackText = !hasValidEmojiImage
-    ? (presentation.customEmojiText ?? activity.emoji?.name)
+    ? (presentation.customEmojiText ?? fallbackEmojiName)
     : undefined;
 
   const isWideMedia = presentation.mediaAspect === "16:9" && hasValidLargeImage;
+  const hasElapsedBadge = !period && timestampStart !== undefined;
+  const hasCountdownBadge = !period && isCountdownOnly;
   const displayStatusBadges =
-    (!period && timestampStart !== undefined) || displayPartySize;
+    hasElapsedBadge || hasCountdownBadge || displayPartySize;
   const showTertiaryLine = Boolean(
     presentation.tertiaryText &&
     !(
@@ -207,7 +250,7 @@ export const RichPresence = (props: RichPresenceProps) => {
 
   return (
     <div
-      className={`rich-presence-container rich-presence-container--theme-${theme} rich-presence-container--size-${size} rich-presence-container--type-${type}${className ? ` ${className}` : ""}`}
+      className={`rich-presence-container rich-presence-container--theme-${theme} rich-presence-container--size-${size} rich-presence-container--type-${containerType}${className ? ` ${className}` : ""}`}
       {...rest}
     >
       {presentation.normalizedType === RichPresenceType.CUSTOM ? (
@@ -221,7 +264,7 @@ export const RichPresence = (props: RichPresenceProps) => {
         >
           <div
             className="rich-presence-custom-status__content"
-            title={presentation.customStatusText ?? activity.emoji?.name}
+            title={presentation.customStatusText ?? fallbackEmojiName}
           >
             {hasValidEmojiImage && presentation.customEmojiUrl ? (
               <img
@@ -284,8 +327,7 @@ export const RichPresence = (props: RichPresenceProps) => {
                     }}
                   />
                 </Tooltip>
-                {assets?.small_image !== undefined &&
-                assets.small_image !== "" ? (
+                {hasSmallImage ? (
                   <div className="rich-presence-image__overlay">
                     <Tooltip text={assets?.small_text}>
                       <img
@@ -351,13 +393,15 @@ export const RichPresence = (props: RichPresenceProps) => {
               ) : null}
               {displayStatusBadges ? (
                 <div className="rich-presence-content__status">
-                  {!period && timestampStart !== undefined ? (
+                  {hasElapsedBadge || hasCountdownBadge ? (
                     <div
                       className={`rich-presence-content__status-item${elapsedModifier}`}
                     >
                       <ElapsedIcon className="rich-presence-content__status-item-icon" />
                       <div className="rich-presence-content__status-item-text">
-                        {elapsedTimeText}
+                        {hasCountdownBadge
+                          ? countdownTimeText
+                          : elapsedTimeText}
                       </div>
                     </div>
                   ) : null}

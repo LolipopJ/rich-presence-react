@@ -8,3 +8,4 @@ export type {
   RichPresenceProps,
 } from "@/RichPresence";
 export { RichPresence as default } from "@/RichPresence";
+export { parseRichPresenceJson } from "@/utils";
