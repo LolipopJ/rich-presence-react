@@ -83,7 +83,13 @@ export interface RichPresenceActivity {
     join?: string | null;
     spectate?: string | null;
   } | null;
-  metadata?: Record<string, unknown> | null;
+  metadata?:
+    | {
+        button_urls?: (string | null)[] | null;
+        [key: string]: unknown;
+      }
+    | Record<string, unknown>
+    | null;
 }
 
 export interface IGDBDetails {

@@ -181,20 +181,34 @@ const resolveButtons = (
     return [];
   }
 
+  const rawButtonUrls = Array.isArray(activity.metadata?.button_urls)
+    ? activity.metadata.button_urls
+    : [];
+
   const normalizedButtons: ResolvedActionButton[] = [];
   if (Array.isArray(activity.buttons)) {
-    for (const item of activity.buttons) {
+    for (let i = 0; i < activity.buttons.length; i += 1) {
+      const item = activity.buttons[i];
+      const rawMetadataUrl = rawButtonUrls[i];
+      const metadataUrl =
+        typeof rawMetadataUrl === "string"
+          ? getSafeExternalUrl(rawMetadataUrl)
+          : undefined;
+
       if (typeof item === "string") {
         const label = nonEmpty(item);
         if (label) {
-          normalizedButtons.push({ label });
+          normalizedButtons.push({
+            label,
+            url: metadataUrl,
+          });
         }
       } else if (item && typeof item === "object") {
         const label = nonEmpty(item.label);
         if (label) {
           normalizedButtons.push({
             label,
-            url: getSafeExternalUrl(item.url),
+            url: item.url == null ? metadataUrl : getSafeExternalUrl(item.url),
           });
         }
       }

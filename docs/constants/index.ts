@@ -198,6 +198,9 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
         small_text: "Twitch",
       },
       buttons: ["Follow Channel"],
+      metadata: {
+        button_urls: ["https://www.twitch.tv/twitch"],
+      },
     },
   },
   {
@@ -243,6 +246,12 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
       name: "Tencent QQ Music",
       application_id: "1431607752945434655",
       buttons: ["🎧 Listen", "🔍 View App on GitHub"],
+      metadata: {
+        button_urls: [
+          "https://y.qq.com/",
+          "https://github.com/LolipopJ/rich-presence-react",
+        ],
+      },
     },
   },
   {
@@ -266,10 +275,10 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
         small_image: SPOTIFY_BADGE_ART,
         small_text: "Spotify",
       },
-      buttons: [
-        { label: "Listen on Spotify", url: "https://open.spotify.com" },
-        "Save Track",
-      ],
+      buttons: ["Listen on Spotify", "Save Track"],
+      metadata: {
+        button_urls: ["https://open.spotify.com", ""],
+      },
     },
   },
 
@@ -365,6 +374,9 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
         small_text: "Premier",
       },
       buttons: ["View Bracket"],
+      metadata: {
+        button_urls: ["https://valorantesports.com/"],
+      },
     },
   },
   {
