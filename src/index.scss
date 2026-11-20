@@ -373,6 +373,31 @@
 
     .rich-presence-content-wrapper {
       gap: 12px;
+
+      > .rich-presence-content:only-child {
+        .rich-presence-content__name {
+          font-size: 16px;
+        }
+
+        .rich-presence-content__details,
+        .rich-presence-content__state,
+        .rich-presence-content__duration-elapsed-time,
+        .rich-presence-content__duration-period,
+        .rich-presence-content__status-item-text {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .rich-presence-custom-status:not(.rich-presence-custom-status--emoji-only) {
+      .rich-presence-custom-status__content {
+        font-size: 16px;
+      }
+
+      .rich-presence-custom-status__emoji-image {
+        width: 22px;
+        height: 22px;
+      }
     }
 
     .rich-presence-custom-status--emoji-only {
