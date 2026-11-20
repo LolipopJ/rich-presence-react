@@ -1,5 +1,6 @@
 import {
   type RichPresenceActivity,
+  type RichPresenceLocale,
   RichPresenceStatusDisplayType,
   RichPresenceType,
 } from "rich-presence-react";
@@ -95,7 +96,11 @@ export const DEMO_CATEGORIES: { id: DemoCategory | "all"; label: string }[] = [
   { id: "unknown", label: "Unknown" },
 ];
 
-export const RICH_PRESENCES: DemoRichPresenceItem[] = [
+const previewStartedAt = Date.now();
+
+const createDemoPresences = (
+  text: (en: string, zh: string) => string,
+): DemoRichPresenceItem[] => [
   // Playing (3)
   {
     id: "playing-vscode",
@@ -105,7 +110,7 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
       state: "Workspace: rich-presence-react",
       details: "Editing RichPresence.tsx",
       timestamps: {
-        start: Date.now() - 160000,
+        start: previewStartedAt - 160000,
       },
       assets: {
         small_text: "Visual Studio Code",
@@ -132,11 +137,11 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
     title: "Playing — FINAL FANTASY XIV (Party Size)",
     activity: {
       state: "Bahamut",
-      details: "法恩娜行星",
+      details: text("Phaenna", "法恩娜行星"),
       assets: {
         small_text: "CRP Lv 100",
         small_image: "478154717814456320",
-        large_text: "法恩娜行星",
+        large_text: text("Phaenna", "法恩娜行星"),
         large_image: "614058326266740737",
       },
       party: {
@@ -158,7 +163,7 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
       details: "Pantheon of Hallownest",
       state: "Boss Rush",
       timestamps: {
-        end: Date.now() + 900000,
+        end: previewStartedAt + 900000,
       },
       assets: {
         small_text: "",
@@ -189,7 +194,7 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
       state: "Software and Game Development",
       url: "https://www.twitch.tv/twitch",
       timestamps: {
-        start: Date.now() - 1840000,
+        start: previewStartedAt - 1840000,
       },
       assets: {
         large_image: STREAM_THUMBNAIL_ART,
@@ -210,11 +215,14 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
     activity: {
       type: RichPresenceType.STREAMING,
       name: "YouTube",
-      details: "TypeScript 组件库多卡片实战直播",
-      state: "前端工程化",
+      details: text(
+        "Building Activity Cards in TypeScript",
+        "TypeScript 组件库多卡片实战直播",
+      ),
+      state: text("Frontend Engineering", "前端工程化"),
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       timestamps: {
-        start: Date.now() - 920000,
+        start: previewStartedAt - 920000,
       },
       assets: {
         large_image: "youtube:dQw4w9WgXcQ",
@@ -229,16 +237,16 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
     category: "listening",
     title: "Listening — QQ Music (Progress Bar + Buttons)",
     activity: {
-      state: "🎤 林俊杰​",
-      details: "▶️ 浪漫血液​",
+      state: text("🎤 JJ Lin", "🎤 林俊杰​"),
+      details: text("▶️ The Romantic", "▶️ 浪漫血液​"),
       timestamps: {
-        start: Date.now(),
-        end: Date.now() + 272529,
+        start: previewStartedAt,
+        end: previewStartedAt + 272529,
       },
       assets: {
         small_text: "Tencent QQMusic",
         small_image: "1431733810025988256",
-        large_text: "💿 新地球​",
+        large_text: text("💿 Genesis", "💿 新地球​"),
         large_image:
           "mp:external/tUPBcSE-j3TBm5OhcouHYVA_njsl-495PNWbOsGYYzA/%3Fmax_age%3D2592000/https/y.gtimg.cn/music/photo_new/T002R500x500M0000033R2xQ2I0Uyf_3.jpg",
       },
@@ -267,7 +275,7 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
       sync_id: "1eyzqe2QqGZUmfcPZtrIyt",
       status_display_type: RichPresenceStatusDisplayType.STATE,
       timestamps: {
-        start: Date.now() - 135000,
+        start: previewStartedAt - 135000,
       },
       assets: {
         large_image: SPOTIFY_ALBUM_ART,
@@ -293,8 +301,8 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
       details: "Designing Discord Activity Cards",
       state: "Frontend Craft",
       timestamps: {
-        start: Date.now() - 320000,
-        end: Date.now() + 900000,
+        start: previewStartedAt - 320000,
+        end: previewStartedAt + 900000,
       },
       assets: {
         large_image: "youtube:dQw4w9WgXcQ",
@@ -308,15 +316,15 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
     title: "Watching — Bilibili (Elapsed Timer)",
     activity: {
       type: RichPresenceType.WATCHING,
-      name: "哔哩哔哩",
-      details: "宇宙探索编辑部",
-      state: "电影频道 • 4K",
+      name: text("Bilibili", "哔哩哔哩"),
+      details: text("Journey to the West", "宇宙探索编辑部"),
+      state: text("Movie Channel • 4K", "电影频道 • 4K"),
       timestamps: {
-        start: Date.now() - 1250000,
+        start: previewStartedAt - 1250000,
       },
       assets: {
         large_image: WATCH_POSTER_ART,
-        large_text: "正片播放中",
+        large_text: text("Now Playing", "正片播放中"),
       },
     },
   },
@@ -333,7 +341,10 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
         name: "🎧",
         id: null,
       },
-      state: "写代码中，戴着耳机循环播放城市民谣。",
+      state: text(
+        "If time could turn its tide, I'd still with fervent zeal squander my days",
+        "时间如果可以倒流，我想我还是会卯起来蹉跎",
+      ),
     },
   },
   {
@@ -365,7 +376,7 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
         size: [5, 5],
       },
       timestamps: {
-        start: Date.now() - 780000,
+        start: previewStartedAt - 780000,
       },
       assets: {
         large_image: COMPETING_ARENA_ART,
@@ -385,15 +396,18 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
     title: "Competing — League Clash (Progress Bar + Party)",
     activity: {
       type: RichPresenceType.COMPETING,
-      name: "英雄联盟冠军杯赛",
-      details: "决赛 BO3 • 召唤师峡谷",
-      state: "五人组队中",
+      name: text("League of Legends Clash", "英雄联盟冠军杯赛"),
+      details: text(
+        "Best-of-3 Finals • Summoner's Rift",
+        "决赛 BO3 • 召唤师峡谷",
+      ),
+      state: text("In a Five-Player Party", "五人组队中"),
       party: {
         size: [5, 5],
       },
       timestamps: {
-        start: Date.now() - 420000,
-        end: Date.now() + 1380000,
+        start: previewStartedAt - 420000,
+        end: previewStartedAt + 1380000,
       },
       assets: {
         large_image: COMPETING_ARENA_ART,
@@ -409,11 +423,11 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
     title: "Unknown — Unrecognized Type 6 (Hang Status, No Assets)",
     activity: {
       type: 6,
-      name: "Hang Status",
-      details: "Chilling in Voice",
-      state: "AFK Lounge",
+      name: text("Hang Status", "闲置"),
+      details: text("Chilling in Voice", "在语音频道里闲聊"),
+      state: text("AFK Lounge", "挂机休息区"),
       timestamps: {
-        start: Date.now() - 540000,
+        start: previewStartedAt - 540000,
       },
     },
   },
@@ -423,12 +437,17 @@ export const RICH_PRESENCES: DemoRichPresenceItem[] = [
     title: "Unknown — Fallback Type -1 (No Assets)",
     activity: {
       type: RichPresenceType.UNKNOWN,
-      name: "未知活动",
-      details: "无图片资产降级示例",
-      state: "中性时钟图标与安全兜底",
+      name: text("Unknown Activity", "未知活动"),
+      details: text("No Image Assets", "无图片"),
+      state: text("Default Clock Icon", "中性时钟图标"),
       timestamps: {
-        start: Date.now() - 180000,
+        start: previewStartedAt - 180000,
       },
     },
   },
 ];
+
+export const RICH_PRESENCES = {
+  en: createDemoPresences((en) => en),
+  zh: createDemoPresences((_en, zh) => zh),
+} satisfies Record<RichPresenceLocale, DemoRichPresenceItem[]>;

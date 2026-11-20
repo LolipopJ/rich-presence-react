@@ -59,10 +59,11 @@ const App = () => {
   const [size, setSize] = useState<SizeOption>("normal");
   const [locale, setLocale] = useState<RichPresenceLocale>("en");
 
+  const presences = RICH_PRESENCES[locale];
   const filteredPresences =
     selectedCategory === "all"
-      ? RICH_PRESENCES
-      : RICH_PRESENCES.filter((item) => item.category === selectedCategory);
+      ? presences
+      : presences.filter((item) => item.category === selectedCategory);
 
   useEffect(() => {
     const highlightBlocks = () => {
